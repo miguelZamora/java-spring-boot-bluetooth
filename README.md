@@ -29,3 +29,7 @@ curl --location 'http://localhost:8080/api/bluetooth/conectar' \
 
 
 Saludos.
+
+
+bueno a esto se agrega un archivo docker-compose para poder tener mysql la idea era guardar las id pero eso que dara en una segunda entrega 
+
