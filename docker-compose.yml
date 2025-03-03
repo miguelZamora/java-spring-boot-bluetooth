@@ -1,0 +1,69 @@
+
+
+services:
+  es01:
+    image: elasticsearch:7.17.28
+    container_name: es01
+    environment:
+      - node.name=es01
+      - cluster.name=my-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - ELASTIC_PASSWORD=changeme  # Cambia esta contraseña
+      - xpack.security.enabled=true
+      - xpack.license.self_generated.type=basic
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata01:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - elastic
+
+  kibana:
+    image: kibana:7.17.28
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://es01:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=changeme  # Cambia esta contraseña
+      - SERVER_HOST=0.0.0.0
+    ports:
+      - 5601:5601
+    depends_on:
+      - es01
+    networks:
+      - elastic
+
+
+
+  mysql:
+    image: mysql:latest
+    container_name: mysql01
+    environment:
+      MYSQL_ROOT_PASSWORD: yourpassword
+      MYSQL_DATABASE: yourdatabase
+      MYSQL_USER: youruser
+      MYSQL_PASSWORD: yourpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysqldata:/var/lib/mysql
+    networks:
+      - elastic      
+      
+
+volumes:
+  esdata01:
+    driver: local
+  mysqldata:
+    driver: local
+
+
+networks:
+  elastic:
+    driver: bridge
